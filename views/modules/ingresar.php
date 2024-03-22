@@ -21,24 +21,35 @@
 </form>
 
 <?php
-
-$ingreso = new MvcController();
-$ingreso -> ingresoUsuarioController();
-
-if(isset($_GET["action"])){
-
-	if($_GET["action"] == "fallo"){
-
-		echo "Fallo al ingresar";
-
-	}
-
-	if($_GET["action"] == "fallo3intentos"){
-
-		echo "Ha fallado 3 veces para ingresar, favor llenar el captcha";
-
-	}
-
+function validarInput($input) {
+    // Expresión regular para validar que el input no contenga caracteres especiales
+    $patron = '/^[a-zA-Z0-9\s]+$/';
+    // Verificar si el input coincide con el patrón
+    if (preg_match($patron, $input)) {
+        return true; // El input es válido
+    } else {
+        return false; // El input contiene caracteres especiales
+    }
 }
 
-  ?>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validar el input de usuario y contraseña
+    if (validarInput($_POST["usuarioIngreso"]) && validarInput($_POST["passwordIngreso"])) {
+        // Aquí continuarías con tu lógica de ingreso de usuario
+        $ingreso = new MvcController();
+        $ingreso->ingresoUsuarioController();
+    } else {
+        // Mostrar un mensaje de error si se encontraron caracteres especiales
+        echo "El usuario y/o contraseña contienen caracteres especiales no permitidos.";
+    }
+}
+
+if (isset($_GET["action"])) {
+    if ($_GET["action"] == "fallo") {
+        echo "Fallo al ingresar";
+    }
+    if ($_GET["action"] == "fallo3intentos") {
+        echo "Ha fallado 3 veces para ingresar, favor llenar el captcha";
+    }
+}
+?>
